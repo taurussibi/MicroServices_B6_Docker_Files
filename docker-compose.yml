@@ -1,0 +1,134 @@
+version: '3'
+services:
+  config-server:
+    image: config-server:latest
+    expose:
+      - 8888
+    ports:
+      - 8888:8888
+    restart: on-failure
+    networks:
+      - ecommerce
+  eureka-server:
+    image: eureka-server:latest
+    expose:
+      - 8761
+    ports:
+      - 8761:8761
+    restart: on-failure
+    networks:
+      - ecommerce
+    depends_on:
+      - config-server
+  zuul-gateway:
+    image: zuul-gateway:latest
+    expose:
+      - 9191
+    ports:
+      - 9191:9191
+    restart: on-failure
+    networks:
+      - ecommerce
+    depends_on:
+      - eureka-server
+  db-product:
+    image: mysql:5.7.28
+    ports:
+      - "33060:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: product
+      MYSQL_USER: Team6_user
+      MYSQL_PASSWORD: team@6
+      MYSQL_ROOT_PASSWORD: Team@6
+    volumes:
+      - /C/Users/USER/mysql-docker-volume/mysql-product:/var/lib/mysql-product
+    networks:
+      - ecommerce
+  db-promotion:
+    image: mysql:5.7.28
+    ports:
+      - "33061:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: promotion
+      MYSQL_USER: Team6_1_user
+      MYSQL_PASSWORD: team@61
+      MYSQL_ROOT_PASSWORD: Team@61
+    volumes:
+      - /C/Users/USER/mysql-docker-volume/mysql-promotion:/var/lib/mysql-promotion
+    networks:
+      - ecommerce    
+  db-price:
+    image: mysql:5.7.28
+    ports:
+      - "33062:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: price
+      MYSQL_USER: Team6_2_user
+      MYSQL_PASSWORD: team@62
+      MYSQL_ROOT_PASSWORD: Team@62
+    volumes:
+      - /C/Users/USER/mysql-docker-volume/mysql-price:/var/lib/mysql-price
+    networks:
+      - ecommerce      
+  product-view:
+    image: product-view:latest
+    expose:
+      - 8091
+    ports:
+      - 8091:8091
+    restart: on-failure
+    networks:
+      - ecommerce
+    depends_on:
+      - eureka-server
+  product-ms:
+    image: product-ms:latest
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    restart: on-failure
+    networks:
+      - ecommerce
+    depends_on:
+      - config-server
+      - eureka-server
+      - zuul-gateway
+      - product-view
+      - db-product
+  promotion-ms:
+    image: promotion-ms:latest
+    expose:
+      - 8003
+    ports:
+      - 8003:8003
+    restart: on-failure
+    networks:
+      - ecommerce
+    depends_on:
+      - config-server
+      - eureka-server
+      - zuul-gateway
+      - product-view
+      - db-promotion
+  price-ms:
+    image: price-ms:latest
+    expose:
+      - 8001
+    ports:
+      - 8001:8001
+    restart: on-failure
+    networks:
+      - ecommerce
+    depends_on:
+      - config-server
+      - eureka-server
+      - zuul-gateway
+      - product-view
+      - db-price
+networks:
+  ecommerce:
+    

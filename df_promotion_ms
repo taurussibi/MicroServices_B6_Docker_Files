@@ -1,0 +1,8 @@
+FROM openjdk:8-jdk-alpine
+
+EXPOSE 8003
+
+ADD MS_Promotion-0.0.1-SNAPSHOT.jar MS_Promotion-0.0.1-SNAPSHOT.jar
+
+ENTRYPOINT ["java", "-jar", "MS_Promotion-0.0.1-SNAPSHOT.jar"]
+
